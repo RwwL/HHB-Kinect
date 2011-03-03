@@ -40,4 +40,7 @@ class testApp : public ofBaseApp {
 		int					angle;
 		
 		int 				pointCloudRotationY;
+	
+		int					testInt;
+	
 };

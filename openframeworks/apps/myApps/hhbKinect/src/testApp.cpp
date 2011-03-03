@@ -27,6 +27,9 @@ void testApp::setup() {
 	pointCloudRotationY = 180;
 	
 	drawPC = false;
+	
+	testInt = 0;
+	
 }
 
 //--------------------------------------------------------------
@@ -70,6 +73,25 @@ void testApp::update() {
     	// also, find holes is set to true so we will get interior contours as well....
     	contourFinder.findContours(grayImage, 10, (kinect.width*kinect.height)/2, 20, false);
 	}
+	
+	testInt ++;
+	
+	if (testInt == 100)
+	{
+		// this works; sends A to app that has keyboard focus:
+		CGPostKeyboardEvent( (CGCharCode)'a', (CGKeyCode)0, true);
+		//CGEventRef eventA = CGEventCreateKeyboardEvent(NULL, (CGKeyCode)0, true);
+		//CFRelease(eventA);
+	}
+	if (testInt == 200)
+	{
+		// this works; sends L to app that has keyboard focus:
+		CGPostKeyboardEvent( (CGCharCode)'l', (CGKeyCode)37, true );
+		//CGEventRef eventL = CGEventCreateKeyboardEvent(NULL, (CGKeyCode)37, true);
+		//CFRelease(eventL);
+		testInt = 0;
+	}
+	
 }
 
 //--------------------------------------------------------------
@@ -92,16 +114,19 @@ void testApp::draw() {
 
 	ofSetColor(255, 255, 255);
 	stringstream reportStream;
-	reportStream << "accel is: " << ofToString(kinect.getMksAccel().x, 2) << " / "
-								 << ofToString(kinect.getMksAccel().y, 2) << " / " 
-								 << ofToString(kinect.getMksAccel().z, 2) << endl
-				 << "press p to switch between images and point cloud, rotate the point cloud with the mouse" << endl
-				 << "using opencv threshold = " << bThreshWithOpenCV <<" (press spacebar)" << endl
-				 << "set near threshold " << nearThreshold << " (press: + -)" << endl
-				 << "set far threshold " << farThreshold << " (press: < >) num blobs found " << contourFinder.nBlobs
-				 	<< ", fps: " << ofGetFrameRate() << endl
-				 << "press c to close the connection and o to open it again, connection is: " << kinect.isConnected() << endl
-				 << "press UP and DOWN to change the tilt angle: " << angle << " degrees";
+	reportStream << "accel is: "
+				<< ofToString(kinect.getMksAccel().x, 2) << " / "
+				<< ofToString(kinect.getMksAccel().y, 2) << " / " 
+				<< ofToString(kinect.getMksAccel().z, 2) << endl
+				<< "press p to switch between images and point cloud, rotate the point cloud with the mouse" << endl
+				<< "using opencv threshold = " << bThreshWithOpenCV <<" (press spacebar)" << endl
+				<< "set near threshold " << nearThreshold << " (press: + -)" << endl
+				<< "set far threshold " << farThreshold << " (press: < >) num blobs found " << contourFinder.nBlobs
+				<< ", fps: " << ofGetFrameRate() << endl
+				<< "press c to close the connection and o to open it again, connection is: " << kinect.isConnected() << endl
+				<< "press UP and DOWN to change the tilt angle: " << angle << " degrees" << endl
+				<< "testInt: " << testInt;
+	
 	ofDrawBitmapString(reportStream.str(),20,666);
 }
 

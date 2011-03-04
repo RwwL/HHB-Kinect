@@ -80,15 +80,11 @@ void testApp::update() {
 	{
 		// this works; sends A to app that has keyboard focus:
 		CGPostKeyboardEvent( (CGCharCode)'a', (CGKeyCode)0, true);
-		//CGEventRef eventA = CGEventCreateKeyboardEvent(NULL, (CGKeyCode)0, true);
-		//CFRelease(eventA);
 	}
 	if (testInt == 200)
 	{
 		// this works; sends L to app that has keyboard focus:
 		CGPostKeyboardEvent( (CGCharCode)'l', (CGKeyCode)37, true );
-		//CGEventRef eventL = CGEventCreateKeyboardEvent(NULL, (CGKeyCode)37, true);
-		//CFRelease(eventL);
 		testInt = 0;
 	}
 	

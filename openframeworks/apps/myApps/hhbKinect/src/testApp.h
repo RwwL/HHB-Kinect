@@ -42,5 +42,6 @@ class testApp : public ofBaseApp {
 		int 				pointCloudRotationY;
 	
 		int					testInt;
-	
+		int					myMinArea;
+		int					myMaxArea;
 };

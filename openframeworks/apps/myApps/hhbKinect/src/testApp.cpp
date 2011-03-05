@@ -15,7 +15,7 @@ void testApp::setup() {
 
 	nearThreshold = 230;
 	farThreshold  = 70;
-	bThreshWithOpenCV = true;
+	bThreshWithOpenCV = false;
 	
 	ofSetFrameRate(60);
 
@@ -29,6 +29,8 @@ void testApp::setup() {
 	drawPC = false;
 	
 	testInt = 0;
+	myMinArea = 15000; // thinking about 150x100px might be good to pick up a humanoid blob?
+	myMaxArea = 90000; // 300x300
 	
 }
 
@@ -69,24 +71,26 @@ void testApp::update() {
 		//update the cv image
 		grayImage.flagImageChanged();
 	
-		// find contours which are between the size of 20 pixels and 1/3 the w*h pixels.
-    	// also, find holes is set to true so we will get interior contours as well....
-    	contourFinder.findContours(grayImage, 10, (kinect.width*kinect.height)/2, 20, false);
+		// find contours which are between the size of my defined min and max areas.
+    	// also, set find holes to false so we wont' get interior contours ... not sure what bUseApproximation does but it's safe to omit
+		// kinect.width = 640, kinect.height = 480, by the wa 
+    	contourFinder.findContours(grayImage, myMinArea, myMaxArea, 20, false);
+		//contourFinder.findContours(<#ofxCvGrayscaleImage input#>, int minArea, <#int maxArea#>, <#int nConsidered#>, <#bool bFindHoles#>, <#bool bUseApproximation#>)
 	}
 	
-	testInt ++;
+	//testInt ++;
 	
-	if (testInt == 100)
-	{
-		// this works; sends A to app that has keyboard focus:
-		CGPostKeyboardEvent( (CGCharCode)'a', (CGKeyCode)0, true);
-	}
-	if (testInt == 200)
-	{
-		// this works; sends L to app that has keyboard focus:
-		CGPostKeyboardEvent( (CGCharCode)'l', (CGKeyCode)37, true );
-		testInt = 0;
-	}
+	//if (testInt == 100)
+//	{
+//		// this works; sends A to app that has keyboard focus:
+//		CGPostKeyboardEvent( (CGCharCode)'a', (CGKeyCode)0, true);
+//	}
+//	if (testInt == 200)
+//	{
+//		// this works; sends L to app that has keyboard focus:
+//		CGPostKeyboardEvent( (CGCharCode)'l', (CGKeyCode)37, true );
+//		testInt = 0;
+//	}
 	
 }
 
@@ -100,28 +104,47 @@ void testApp::draw() {
 		drawPointCloud();
 		ofPopMatrix();
 	}else{
-		kinect.drawDepth(10, 10, 400, 300);
-		kinect.draw(420, 10, 400, 300);
+		stringstream drawDepthLabel;
+		drawDepthLabel << "kinect.drawDepth";
+		ofDrawBitmapString(drawDepthLabel.str(), 10, 10);
+		kinect.drawDepth(10, 15, 400, 300);
+		
+		stringstream drawLabel;
+		drawLabel << "kinect.draw";
+		ofDrawBitmapString(drawLabel.str(), 420, 10	);
+		kinect.draw(420, 15, 400, 300);
 
-		grayImage.draw(10, 320, 400, 300);
-		contourFinder.draw(10, 320, 400, 300);
+		stringstream grayLabel;
+		grayLabel << "grayImage.draw + contourFinder.draw";
+		ofDrawBitmapString(grayLabel.str(), 10, 330);
+		grayImage.draw(10, 335, 400, 300);
+		contourFinder.draw(10, 335, 400, 300);
 	}
 	
 
 	ofSetColor(255, 255, 255);
 	stringstream reportStream;
-	reportStream << "accel is: "
-				<< ofToString(kinect.getMksAccel().x, 2) << " / "
-				<< ofToString(kinect.getMksAccel().y, 2) << " / " 
-				<< ofToString(kinect.getMksAccel().z, 2) << endl
+	reportStream << "using opencv threshold = " << bThreshWithOpenCV << " (press spacebar) " << endl
+				<< endl
 				<< "press p to switch between images and point cloud, rotate the point cloud with the mouse" << endl
-				<< "using opencv threshold = " << bThreshWithOpenCV <<" (press spacebar)" << endl
-				<< "set near threshold " << nearThreshold << " (press: + -)" << endl
-				<< "set far threshold " << farThreshold << " (press: < >) num blobs found " << contourFinder.nBlobs
-				<< ", fps: " << ofGetFrameRate() << endl
-				<< "press c to close the connection and o to open it again, connection is: " << kinect.isConnected() << endl
+				<< endl
+				<< "set near threshold " << nearThreshold << " (press: + -)" << "    ||    " << "set far threshold " << farThreshold << " (press: < >) " << endl
+				<< endl
+				<< "num blobs found: " << contourFinder.nBlobs << endl
+				<< endl
+				<< "press c to close the connection and k to open it again, connection is: " << kinect.isConnected() << endl
+				<< endl
 				<< "press UP and DOWN to change the tilt angle: " << angle << " degrees" << endl
-				<< "testInt: " << testInt;
+				<< endl
+				<< "myMinArea (o/p): " << myMinArea << ", myMaxArea ([/]): " << myMaxArea;
+				
+				// reporting I don't really need for now
+				// ", fps: " << ofGetFrameRate() 
+				//	<< "accel is: "
+				//	<< ofToString(kinect.getMksAccel().x, 2) << " / "
+				//	<< ofToString(kinect.getMksAccel().y, 2) << " / " 
+				//	<< ofToString(kinect.getMksAccel().z, 2) << endl
+	
 	
 	ofDrawBitmapString(reportStream.str(),20,666);
 }
@@ -154,10 +177,22 @@ void testApp::exit() {
 //--------------------------------------------------------------
 void testApp::keyPressed (int key) {
 	switch (key) {
+		case '[':
+			myMaxArea--;
+			break;
+		case ']':
+			myMaxArea++;
+			break;
+		case 'o':
+			myMinArea--;
+			break;
+		case 'p':
+			myMinArea++;
+			break;
 		case ' ':
 			bThreshWithOpenCV = !bThreshWithOpenCV;
-		break;
-		case'p':
+			break;
+		case'q':
 			drawPC = !drawPC;
 			break;
 	
@@ -184,7 +219,7 @@ void testApp::keyPressed (int key) {
 		case 'w':
 			kinect.enableDepthNearValueWhite(!kinect.isDepthNearValueWhite());
 			break;
-		case 'o':
+		case 'k':
 			kinect.setCameraTiltAngle(angle);	// go back to prev tilt
 			kinect.open();
 			break;

@@ -13,8 +13,8 @@ void testApp::setup() {
 	grayThresh.allocate(kinect.width, kinect.height);
 	grayThreshFar.allocate(kinect.width, kinect.height);
 
-	nearThreshold = 230;
-	farThreshold  = 70;
+	nearThreshold = 200;
+	farThreshold  = 100;
 	bThreshWithOpenCV = false;
 	
 	ofSetFrameRate(60);
@@ -31,6 +31,8 @@ void testApp::setup() {
 	testInt = 0;
 	myMinArea = 15000; // thinking about 150x100px might be good to pick up a humanoid blob?
 	myMaxArea = 90000; // 300x300
+	
+	observing = true;
 	
 }
 
@@ -53,7 +55,7 @@ void testApp::update() {
 			grayThreshFar.threshold(farThreshold);
 			cvAnd(grayThresh.getCvImage(), grayThreshFar.getCvImage(), grayImage.getCvImage(), NULL);
 		}else{
-		
+			// [RL] USING THIS ONE... not that it probably matters too much
 			//or we do it ourselves - show people how they can work with the pixels
 		
 			unsigned char * pix = grayImage.getPixels();
@@ -73,24 +75,34 @@ void testApp::update() {
 	
 		// find contours which are between the size of my defined min and max areas.
     	// also, set find holes to false so we wont' get interior contours ... not sure what bUseApproximation does but it's safe to omit
-		// kinect.width = 640, kinect.height = 480, by the wa 
+		// kinect.width = 640, kinect.height = 480, by the way
     	contourFinder.findContours(grayImage, myMinArea, myMaxArea, 20, false);
-		//contourFinder.findContours(<#ofxCvGrayscaleImage input#>, int minArea, <#int maxArea#>, <#int nConsidered#>, <#bool bFindHoles#>, <#bool bUseApproximation#>)
+		//contourFinder.findContours( ofxCvGrayscaleImage input, int minArea, int maxArea, int nConsidered, bool bFindHoles, bool bUseApproximation )
+
+	
+		if (contourFinder.nBlobs > 0 && observing) {
+			CGPostKeyboardEvent( (CGCharCode)'a', (CGKeyCode)0, true);
+			observing = false;
+		}
+		if (contourFinder.nBlobs == 0) {
+			observing = true;
+		}
+	
 	}
 	
 	//testInt ++;
 	
 	//if (testInt == 100)
-//	{
-//		// this works; sends A to app that has keyboard focus:
-//		CGPostKeyboardEvent( (CGCharCode)'a', (CGKeyCode)0, true);
-//	}
-//	if (testInt == 200)
-//	{
-//		// this works; sends L to app that has keyboard focus:
-//		CGPostKeyboardEvent( (CGCharCode)'l', (CGKeyCode)37, true );
-//		testInt = 0;
-//	}
+	//	{
+	//		// this works; sends A to app that has keyboard focus:
+	//		CGPostKeyboardEvent( (CGCharCode)'a', (CGKeyCode)0, true);
+	//	}
+	//	if (testInt == 200)
+	//	{
+	//		// this works; sends L to app that has keyboard focus:
+	//		CGPostKeyboardEvent( (CGCharCode)'l', (CGKeyCode)37, true );
+	//		testInt = 0;
+	//	}
 	
 }
 

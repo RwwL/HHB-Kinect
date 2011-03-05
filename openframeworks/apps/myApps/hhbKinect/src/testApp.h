@@ -44,4 +44,5 @@ class testApp : public ofBaseApp {
 		int					testInt;
 		int					myMinArea;
 		int					myMaxArea;
+		bool				observing;
 };

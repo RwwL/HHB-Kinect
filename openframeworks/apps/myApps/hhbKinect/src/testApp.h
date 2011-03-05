@@ -13,7 +13,7 @@ class testApp : public ofBaseApp {
 		void exit();
 	
 		void drawPointCloud();
-
+	
 		void keyPressed  (int key);
 		void mouseMoved(int x, int y );
 		void mouseDragged(int x, int y, int button);
@@ -44,5 +44,11 @@ class testApp : public ofBaseApp {
 		int					testInt;
 		int					myMinArea;
 		int					myMaxArea;
-		bool				observing;
+		int					centerLine;
+		bool				observingLeft;
+		bool				observingRight;
+		bool				blobOnLeft;
+		bool				blobOnRight;
+	
+		void noteBlobLocations(ofxCvBlob blob);
 };

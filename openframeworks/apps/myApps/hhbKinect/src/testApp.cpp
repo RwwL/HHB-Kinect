@@ -32,7 +32,11 @@ void testApp::setup() {
 	myMinArea = 15000; // thinking about 150x100px might be good to pick up a humanoid blob?
 	myMaxArea = 90000; // 300x300
 	
-	observing = true;
+	observingLeft = true;
+	observingRight = true;
+	blobOnLeft = false;
+	blobOnRight = false;
+	centerLine = kinect.width/2;
 	
 }
 
@@ -74,35 +78,61 @@ void testApp::update() {
 		grayImage.flagImageChanged();
 	
 		// find contours which are between the size of my defined min and max areas.
+		// not sure what nConsidered does yet; leaving it alone...
     	// also, set find holes to false so we wont' get interior contours ... not sure what bUseApproximation does but it's safe to omit
 		// kinect.width = 640, kinect.height = 480, by the way
     	contourFinder.findContours(grayImage, myMinArea, myMaxArea, 20, false);
 		//contourFinder.findContours( ofxCvGrayscaleImage input, int minArea, int maxArea, int nConsidered, bool bFindHoles, bool bUseApproximation )
 
-	
-		if (contourFinder.nBlobs > 0 && observing) {
-			CGPostKeyboardEvent( (CGCharCode)'a', (CGKeyCode)0, true);
-			observing = false;
-		}
-		if (contourFinder.nBlobs == 0) {
-			observing = true;
-		}
-	
 	}
 	
-	//testInt ++;
+	blobOnLeft = false;
+	blobOnRight = false;
 	
-	//if (testInt == 100)
-	//	{
-	//		// this works; sends A to app that has keyboard focus:
-	//		CGPostKeyboardEvent( (CGCharCode)'a', (CGKeyCode)0, true);
-	//	}
-	//	if (testInt == 200)
-	//	{
-	//		// this works; sends L to app that has keyboard focus:
-	//		CGPostKeyboardEvent( (CGCharCode)'l', (CGKeyCode)37, true );
-	//		testInt = 0;
-	//	}
+	for (int i = 0; i < contourFinder.blobs.size(); i++) {
+		
+		if (contourFinder.blobs[i].centroid.x < centerLine)
+		{
+			blobOnLeft = true;
+		}
+		
+		if (contourFinder.blobs[i].centroid.x > centerLine)
+		{
+			blobOnRight = true;
+		}
+		
+	}
+	
+	
+	if (blobOnLeft && observingLeft)
+	{
+		// fire the A key!
+		CGPostKeyboardEvent( (CGCharCode)'a', (CGKeyCode)0, true);
+		// prevent firing on next update so the user has to get out of frame
+		observingLeft = false;
+	}
+	if (blobOnRight && observingRight)
+	{
+		// fire the L key! 
+		CGPostKeyboardEvent( (CGCharCode)'l', (CGKeyCode)37, true );
+		// prevent firing on next update so the user has to get out of frame
+		observingRight = false;
+	}
+	
+	// no blobs seen on a given side? start observing again
+	if (!blobOnLeft) {
+		observingLeft = true;
+	}
+	
+	if (!blobOnRight) {
+		observingRight = true;
+	}
+	
+	
+	// this works; sends A to app that has keyboard focus:
+	// CGPostKeyboardEvent( (CGCharCode)'a', (CGKeyCode)0, true);
+	// this works; sends L to app that has keyboard focus:
+	// CGPostKeyboardEvent( (CGCharCode)'l', (CGKeyCode)37, true );
 	
 }
 
@@ -156,9 +186,9 @@ void testApp::draw() {
 				//	<< ofToString(kinect.getMksAccel().x, 2) << " / "
 				//	<< ofToString(kinect.getMksAccel().y, 2) << " / " 
 				//	<< ofToString(kinect.getMksAccel().z, 2) << endl
-	
-	
 	ofDrawBitmapString(reportStream.str(),20,666);
+	
+	
 }
 
 void testApp::drawPointCloud() {
@@ -179,6 +209,7 @@ void testApp::drawPointCloud() {
 	}
 	glEnd();
 }
+
 
 //--------------------------------------------------------------
 void testApp::exit() {

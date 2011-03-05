@@ -45,10 +45,10 @@ class testApp : public ofBaseApp {
 		int					myMinArea;
 		int					myMaxArea;
 		int					centerLine;
+		int					sideBuffer;
 		bool				observingLeft;
 		bool				observingRight;
 		bool				blobOnLeft;
 		bool				blobOnRight;
 	
-		void noteBlobLocations(ofxCvBlob blob);
 };

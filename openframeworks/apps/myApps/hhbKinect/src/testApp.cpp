@@ -13,8 +13,8 @@ void testApp::setup() {
 	grayThresh.allocate(kinect.width, kinect.height);
 	grayThreshFar.allocate(kinect.width, kinect.height);
 
-	nearThreshold = 200;
-	farThreshold  = 100;
+	nearThreshold = 230;
+	farThreshold  = 95;
 	bThreshWithOpenCV = false;
 	
 	ofSetFrameRate(60);
@@ -29,14 +29,15 @@ void testApp::setup() {
 	drawPC = false;
 	
 	testInt = 0;
-	myMinArea = 15000; // thinking about 150x100px might be good to pick up a humanoid blob?
-	myMaxArea = 90000; // 300x300
+	myMinArea = 25000; // guessing at these... no rhyme or reason here, thank you very much
+	myMaxArea = 91500;
 	
 	observingLeft = true;
 	observingRight = true;
 	blobOnLeft = false;
 	blobOnRight = false;
 	centerLine = kinect.width/2;
+	sideBuffer = 150;
 	
 }
 
@@ -91,12 +92,14 @@ void testApp::update() {
 	
 	for (int i = 0; i < contourFinder.blobs.size(); i++) {
 		
-		if (contourFinder.blobs[i].centroid.x < centerLine)
+		int blobCtrX = contourFinder.blobs[i].centroid.x;
+		
+		if (blobCtrX < centerLine && blobCtrX > sideBuffer)
 		{
 			blobOnLeft = true;
 		}
 		
-		if (contourFinder.blobs[i].centroid.x > centerLine)
+		if (blobCtrX > centerLine && blobCtrX < kinect.width - sideBuffer)
 		{
 			blobOnRight = true;
 		}
@@ -168,7 +171,7 @@ void testApp::draw() {
 	stringstream reportStream;
 	reportStream << "using opencv threshold = " << bThreshWithOpenCV << " (press spacebar) " << endl
 				<< endl
-				<< "press p to switch between images and point cloud, rotate the point cloud with the mouse" << endl
+				<< "press q to switch between images and point cloud, rotate the point cloud with the mouse" << endl
 				<< endl
 				<< "set near threshold " << nearThreshold << " (press: + -)" << "    ||    " << "set far threshold " << farThreshold << " (press: < >) " << endl
 				<< endl
@@ -188,7 +191,17 @@ void testApp::draw() {
 				//	<< ofToString(kinect.getMksAccel().z, 2) << endl
 	ofDrawBitmapString(reportStream.str(),20,666);
 	
-	
+	stringstream varsStream;
+	varsStream << "observingLeft: " << observingLeft << endl
+				<< endl
+				<< "blobOnLeft: " << blobOnLeft << endl
+				<< endl
+				<< "--------------------" << endl
+				<< endl
+				<< "observingRight: " << observingRight << endl
+				<< endl
+				<< "blobOnRight: " << blobOnRight;
+	ofDrawBitmapString(varsStream.str(),420,350);
 }
 
 void testApp::drawPointCloud() {
@@ -221,16 +234,16 @@ void testApp::exit() {
 void testApp::keyPressed (int key) {
 	switch (key) {
 		case '[':
-			myMaxArea--;
+			myMaxArea-=100;
 			break;
 		case ']':
-			myMaxArea++;
+			myMaxArea+=100;
 			break;
 		case 'o':
-			myMinArea--;
+			myMinArea-=100;
 			break;
 		case 'p':
-			myMinArea++;
+			myMinArea+=100;
 			break;
 		case ' ':
 			bThreshWithOpenCV = !bThreshWithOpenCV;

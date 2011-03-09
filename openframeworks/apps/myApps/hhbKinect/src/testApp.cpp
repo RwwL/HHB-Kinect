@@ -17,7 +17,7 @@ void testApp::setup() {
 	farThreshold  = 95;
 	bThreshWithOpenCV = false;
 	
-	ofSetFrameRate(60);
+	ofSetFrameRate(20);
 
 	// zero the tilt on startup
 	angle = 0;
@@ -25,7 +25,7 @@ void testApp::setup() {
 	
 	// start from the front
 	pointCloudRotationY = 180;
-	
+		
 	drawPC = false;
 	
 	testInt = 0;
@@ -111,6 +111,7 @@ void testApp::update() {
 	{
 		// fire the A key!
 		CGPostKeyboardEvent( (CGCharCode)'a', (CGKeyCode)0, true);
+		CGPostKeyboardEvent( (CGCharCode)'a', (CGKeyCode)0, false);
 		// prevent firing on next update so the user has to get out of frame
 		observingLeft = false;
 	}
@@ -118,6 +119,7 @@ void testApp::update() {
 	{
 		// fire the L key! 
 		CGPostKeyboardEvent( (CGCharCode)'l', (CGKeyCode)37, true );
+		CGPostKeyboardEvent( (CGCharCode)'l', (CGKeyCode)37, false );
 		// prevent firing on next update so the user has to get out of frame
 		observingRight = false;
 	}
@@ -151,19 +153,19 @@ void testApp::draw() {
 	}else{
 		stringstream drawDepthLabel;
 		drawDepthLabel << "kinect.drawDepth";
-		ofDrawBitmapString(drawDepthLabel.str(), 10, 10);
-		kinect.drawDepth(10, 15, 400, 300);
+		//ofDrawBitmapString(drawDepthLabel.str(), 10, 10);
+		//kinect.drawDepth(10, 15, 400, 300);
 		
 		stringstream drawLabel;
 		drawLabel << "kinect.draw";
-		ofDrawBitmapString(drawLabel.str(), 420, 10	);
-		kinect.draw(420, 15, 400, 300);
+		//ofDrawBitmapString(drawLabel.str(), 420, 10	);
+		//kinect.draw(420, 15, 400, 300);
 
 		stringstream grayLabel;
 		grayLabel << "grayImage.draw + contourFinder.draw";
-		ofDrawBitmapString(grayLabel.str(), 10, 330);
-		grayImage.draw(10, 335, 400, 300);
-		contourFinder.draw(10, 335, 400, 300);
+		ofDrawBitmapString(grayLabel.str(), 10, 15); // y was 330
+		grayImage.draw(10, 15, 400, 300); // y was 335
+		contourFinder.draw(10, 15, 400, 300); // y was 335
 	}
 	
 
@@ -189,7 +191,7 @@ void testApp::draw() {
 				//	<< ofToString(kinect.getMksAccel().x, 2) << " / "
 				//	<< ofToString(kinect.getMksAccel().y, 2) << " / " 
 				//	<< ofToString(kinect.getMksAccel().z, 2) << endl
-	ofDrawBitmapString(reportStream.str(),20,666);
+	ofDrawBitmapString(reportStream.str(),20,330); // was 666
 	
 	stringstream varsStream;
 	varsStream << "observingLeft: " << observingLeft << endl
@@ -201,7 +203,7 @@ void testApp::draw() {
 				<< "observingRight: " << observingRight << endl
 				<< endl
 				<< "blobOnRight: " << blobOnRight;
-	ofDrawBitmapString(varsStream.str(),420,350);
+	ofDrawBitmapString(varsStream.str(),420,15); // Y was 350
 }
 
 void testApp::drawPointCloud() {

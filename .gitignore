@@ -1,10 +1,7 @@
 $ cat .gitignore
 
 .DS_Store
+openframeworks/apps/myApps/hhbKinect/build/
 openframeworks/apps/myApps/hhbKinect/bin/hhbKinect.app/
-openframeworks/apps/myApps/hhbKinect/build/hhbKinect.build/Debug/hhbKinect.build/Objects-normal/i386/testApp.o~$
-openframeworks/apps/myApps/hhbKinect/build/hhbKinect.build/Debug/hhbKinect.build/Objects-normal/i386/testApp.o~>
-openframeworks/apps/myApps/hhbKinect/build/hhbKinect.build/Debug/hhbKinect.build/Objects-normal/i386/testApp.o~?
-openframeworks/apps/myApps/hhbKinect/build/hhbKinect.build/Release/
 openframeworks/libs/openFrameworksCompiled/lib/osx/openFrameworks.a
 openframeworks/libs/openFrameworksCompiled/project/osx/build/openFrameworksLib.build/Release/

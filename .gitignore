@@ -5,3 +5,6 @@ openframeworks/apps/myApps/hhbKinect/build/
 openframeworks/apps/myApps/hhbKinect/bin/hhbKinect.app/
 openframeworks/libs/openFrameworksCompiled/lib/osx/openFrameworks.a
 openframeworks/libs/openFrameworksCompiled/project/osx/build/openFrameworksLib.build/Release/
+openframeworks/apps/myApps/hhbKinect/hhbKinect.xcodeproj/project.xcworkspace/
+openframeworks/apps/myApps/hhbKinect/hhbKinect.xcodeproj/xcuserdata/
+openframeworks/libs/openFrameworksCompiled/project/osx/openFrameworksLib.xcodeproj/xcuserdata/

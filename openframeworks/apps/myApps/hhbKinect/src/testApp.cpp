@@ -13,8 +13,8 @@ void testApp::setup() {
 	grayThresh.allocate(kinect.width, kinect.height);
 	grayThreshFar.allocate(kinect.width, kinect.height);
 
-	nearThreshold = 230;
-	farThreshold  = 95;
+	nearThreshold = 255;
+	farThreshold  = 140;
 	bThreshWithOpenCV = false;
 	
 	ofSetFrameRate(20);
@@ -29,15 +29,15 @@ void testApp::setup() {
 	drawPC = false;
 	
 	testInt = 0;
-	myMinArea = 25000; // guessing at these... no rhyme or reason here, thank you very much
-	myMaxArea = 91500;
+	myMinArea = 18000; // guessing at these... no rhyme or reason here, thank you very much
+	myMaxArea = 95000;
 	
 	observingLeft = true;
 	observingRight = true;
 	blobOnLeft = false;
 	blobOnRight = false;
 	centerLine = kinect.width/2;
-	sideBuffer = 150;
+	sideBuffer = 100;
 	
 }
 
@@ -151,59 +151,57 @@ void testApp::draw() {
 		drawPointCloud();
 		ofPopMatrix();
 	}else{
-		stringstream drawDepthLabel;
-		drawDepthLabel << "kinect.drawDepth";
+		//stringstream drawDepthLabel;
+		//drawDepthLabel << "kinect.drawDepth";
 		//ofDrawBitmapString(drawDepthLabel.str(), 10, 10);
 		//kinect.drawDepth(10, 15, 400, 300);
 		
-		stringstream drawLabel;
-		drawLabel << "kinect.draw";
+		//stringstream drawLabel;
+		//drawLabel << "kinect.draw";
 		//ofDrawBitmapString(drawLabel.str(), 420, 10	);
 		//kinect.draw(420, 15, 400, 300);
 
 		stringstream grayLabel;
 		grayLabel << "grayImage.draw + contourFinder.draw";
-		ofDrawBitmapString(grayLabel.str(), 10, 15); // y was 330
-		grayImage.draw(10, 15, 400, 300); // y was 335
-		contourFinder.draw(10, 15, 400, 300); // y was 335
+		ofDrawBitmapString(grayLabel.str(), 10, 20); // y was 330
+		grayImage.draw(10, 25, 400, 300); // y was 335
+		contourFinder.draw(10, 25, 400, 300); // y was 335
 	}
 	
 
 	ofSetColor(255, 255, 255);
 	stringstream reportStream;
-	reportStream << "using opencv threshold = " << bThreshWithOpenCV << " (press spacebar) " << endl
-				<< endl
-				<< "press q to switch between images and point cloud, rotate the point cloud with the mouse" << endl
-				<< endl
-				<< "set near threshold " << nearThreshold << " (press: + -)" << "    ||    " << "set far threshold " << farThreshold << " (press: < >) " << endl
-				<< endl
-				<< "num blobs found: " << contourFinder.nBlobs << endl
-				<< endl
-				<< "press c to close the connection and k to open it again, connection is: " << kinect.isConnected() << endl
-				<< endl
-				<< "press UP and DOWN to change the tilt angle: " << angle << " degrees" << endl
-				<< endl
-				<< "myMinArea (o/p): " << myMinArea << ", myMaxArea ([/]): " << myMaxArea;
-				
-				// reporting I don't really need for now
-				// ", fps: " << ofGetFrameRate() 
-				//	<< "accel is: "
-				//	<< ofToString(kinect.getMksAccel().x, 2) << " / "
-				//	<< ofToString(kinect.getMksAccel().y, 2) << " / " 
-				//	<< ofToString(kinect.getMksAccel().z, 2) << endl
-	ofDrawBitmapString(reportStream.str(),20,330); // was 666
-	
-	stringstream varsStream;
-	varsStream << "observingLeft: " << observingLeft << endl
-				<< endl
-				<< "blobOnLeft: " << blobOnLeft << endl
-				<< endl
-				<< "--------------------" << endl
-				<< endl
-				<< "observingRight: " << observingRight << endl
-				<< endl
-				<< "blobOnRight: " << blobOnRight;
-	ofDrawBitmapString(varsStream.str(),420,15); // Y was 350
+	reportStream    << "observingLeft: " << observingLeft << endl
+                    << endl
+                    << "blobOnLeft: " << blobOnLeft << endl
+                    << endl
+                    << "--------------------" << endl
+                    << endl
+                    << "observingRight: " << observingRight << endl
+                    << endl
+                    << "blobOnRight: " << blobOnRight << endl
+                    << endl
+                    << "--------------------" << endl
+                    << endl
+                    << "near threshold (+ / -): " << nearThreshold << endl
+                    << endl
+                    << "far threshold  (< / >): " << farThreshold << endl
+                    << endl
+                    << "sideBuffer (u / i): " << sideBuffer << endl                
+                    << endl
+                    << "tilt angle (up arrow / down arrow): " << angle << " degrees" << endl
+                    << endl
+                    << "minArea (o / p): " << myMinArea << endl 
+                    << endl
+                    << "maxArea ([ / ]): " << myMaxArea << endl
+                    << endl
+                    << "centerLine: " << centerLine << endl
+                    << endl
+                    << "press c to close the connection and k to open it again" << endl
+                    << "connection is: " << kinect.isConnected();
+
+                    ofDrawBitmapString(reportStream.str(),420,35);
+
 }
 
 void testApp::drawPointCloud() {
@@ -235,6 +233,7 @@ void testApp::exit() {
 //--------------------------------------------------------------
 void testApp::keyPressed (int key) {
 	switch (key) {
+        
 		case '[':
 			myMaxArea-=100;
 			break;
@@ -253,7 +252,6 @@ void testApp::keyPressed (int key) {
 		case'q':
 			drawPC = !drawPC;
 			break;
-	
 		case '>':
 		case '.':
 			farThreshold ++;
@@ -264,7 +262,14 @@ void testApp::keyPressed (int key) {
 			farThreshold --;
 			if (farThreshold < 0) farThreshold = 0;
 			break;
-			
+		case 'i':
+			sideBuffer ++;
+			if (sideBuffer > centerLine) sideBuffer = centerLine;
+			break;
+		case 'u':		
+			sideBuffer --;
+			if (sideBuffer < 0) sideBuffer = 0;
+			break;			
 		case '+':
 		case '=':
 			nearThreshold ++;
